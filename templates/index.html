@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雾霾定位探测系统</title>
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/echart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/skycons.js') }}"></script>
+</head>
+<body>
+
+<div class="bg-animation">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <h1 class="app-title">雾霾定位探测</h1>
+    <div class="location-bar" id="locationBar">
+      <span class="loc-icon">📍</span>
+      <span class="loc-city" id="locCity">定位中...</span>
+      <span class="loc-source" id="locSource"></span>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- Card: Current Weather -->
+    <div class="glass-card weather-card">
+      <div class="card-header">
+        <span class="card-icon">🌤️</span>
+        <span class="card-title">实时天气</span>
+      </div>
+      <div class="weather-main">
+        <div class="weather-visual">
+          <canvas id="skycon" width="120" height="120"></canvas>
+        </div>
+        <div class="weather-data">
+          <div class="temp-display">
+            <span class="temp-value" id="tempValue">--</span>
+            <span class="temp-unit">°C</span>
+          </div>
+          <div class="weather-desc" id="weatherDesc">加载中</div>
+          <div class="weather-extras">
+            <div class="extra-item">
+              <span class="extra-label">💧 湿度</span>
+              <span class="extra-value" id="humidity">--%</span>
+            </div>
+            <div class="extra-item">
+              <span class="extra-label">🌬️ 风速</span>
+              <span class="extra-value" id="windSpeed">--</span>
+            </div>
+            <div class="extra-item">
+              <span class="extra-label">👁️ 能见度</span>
+              <span class="extra-value" id="visibility">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Fog & Haze Assessment -->
+    <div class="glass-card fog-card">
+      <div class="card-header">
+        <span class="card-icon">🔍</span>
+        <span class="card-title">雾霾评估</span>
+      </div>
+      <div class="fog-haze-grid">
+        <div class="fh-item fog-item">
+          <div class="fh-icon">🌫️</div>
+          <div class="fh-label">雾等级</div>
+          <div class="fh-value" id="fogLevel">获取中</div>
+          <div class="fh-bar">
+            <div class="fh-bar-fill fog-fill" id="fogBar"></div>
+          </div>
+        </div>
+        <div class="fh-item haze-item">
+          <div class="fh-icon">🏭</div>
+          <div class="fh-label">霾等级</div>
+          <div class="fh-value" id="hazeLevel">获取中</div>
+          <div class="fh-bar">
+            <div class="fh-bar-fill haze-fill" id="hazeBar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="health-advice" id="healthAdvice">
+        <span class="advice-icon">💡</span>
+        <span class="advice-text">正在获取数据...</span>
+      </div>
+    </div>
+
+    <!-- Card: Air Quality Details -->
+    <div class="glass-card air-card">
+      <div class="card-header">
+        <span class="card-icon">📊</span>
+        <span class="card-title">空气质量详情</span>
+      </div>
+      <div class="air-grid">
+        <div class="air-item">
+          <div class="air-circle" id="aqiCircle">
+            <span class="air-number" id="aqiValue">--</span>
+          </div>
+          <div class="air-name">AQI</div>
+        </div>
+        <div class="air-item">
+          <div class="air-circle">
+            <span class="air-number" id="pm25Value">--</span>
+          </div>
+          <div class="air-name">PM2.5</div>
+        </div>
+        <div class="air-item">
+          <div class="air-circle">
+            <span class="air-number" id="pm10Value">--</span>
+          </div>
+          <div class="air-name">PM10</div>
+        </div>
+        <div class="air-item">
+          <div class="air-circle">
+            <span class="air-number" id="so2Value">--</span>
+          </div>
+          <div class="air-name">SO₂</div>
+        </div>
+        <div class="air-item">
+          <div class="air-circle">
+            <span class="air-number" id="no2Value">--</span>
+          </div>
+          <div class="air-name">NO₂</div>
+        </div>
+        <div class="air-item">
+          <div class="air-circle">
+            <span class="air-number" id="coValue">--</span>
+          </div>
+          <div class="air-name">CO</div>
+        </div>
+        <div class="air-item">
+          <div class="air-circle">
+            <span class="air-number" id="o3Value">--</span>
+          </div>
+          <div class="air-name">O₃</div>
+        </div>
+      </div>
+      <div class="air-category" id="airCategory">--</div>
+    </div>
+
+    <!-- Card: 7-Day Forecast Chart -->
+    <div class="glass-card chart-card">
+      <div class="card-header">
+        <span class="card-icon">📈</span>
+        <span class="card-title">七天预报</span>
+      </div>
+      <div class="chart-wrapper">
+        <div id="forecastChart"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>雾霾定位探测系统 &copy; 2026</p>
+  </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

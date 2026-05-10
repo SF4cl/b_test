@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Fog:', d['fog_haze']['fog_label'], '\\(level', d['fog_haze']['fog_level'], '\\)'\\); print\\('Haze:', d['fog_haze']['haze_label']\\); print\\('Vis:', d['weather']['vis'], 'm'\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); f=d.get\\('forecast',[]\\); print\\(len\\(f\\),'days'\\); [print\\(x.get\\('date',''\\), x.get\\('temp_max',''\\), x.get\\('humidity',''\\)\\) for x in f[:3]]\")"
+    ]
+  }
+}
